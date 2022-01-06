@@ -1,4 +1,9 @@
+TesisAriel_imprimir.pdf
+
 #Ignore all txt files
 *.txt
-#except
+*.docx
+*.ppt
+
+#except:
 !hola.txt
