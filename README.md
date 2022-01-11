@@ -5,3 +5,5 @@ Thesis: Emotion recognition in speech using MFCC and multi-band spectral entropy
 * PDF whit Thesis to learn more about the subject
 
 this work need improve in to many issues
+
+“License: MIT.”
