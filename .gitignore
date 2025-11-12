@@ -87,6 +87,9 @@ Thumbs.db
 *.ppt
 # Research papers and thesis documents (reference only, not needed for code execution)
 articulos/
+# Allow author's thesis documents in documento/
+!documento/Thesis_Emotion_Recognition_from_Speech.pdf
+!documento/Thesis_Presentation_Emotion_Recognition_from_Speech.pptx
 
 # Text files (except specific ones)
 *.txt
