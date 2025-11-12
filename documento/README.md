@@ -19,10 +19,6 @@ The thesis presentation slides covering:
 - Key findings and results
 - Visualizations and demonstrations
 
-## Note
-
-These files are stored locally for reference but are not tracked in the git repository to avoid copyright issues. They provide the theoretical foundation and detailed explanation of the work presented in this repository.
-
 ## Author
 
 **Raydesel Ariel Sánchez Montes**
