@@ -103,11 +103,11 @@ EmotionRecognitionSpeech/
 │   ├── experimentos/                            # Experimental analysis
 │   ├── visualizacion/                           # Data visualization
 │   └── helpers/                                 # Utility functions
-├── metadatos/                                   # Dataset metadata
+├── metadata/                                    # Dataset metadata
 │   ├── EMODB - testSize 0.3.csv
 │   └── emovo - testSize 0.3.csv
 ├── articulos/                                   # Research papers (reference)
-├── documento/                                   # Thesis documentation
+├── thesis/                                      # Thesis documentation
 ├── requirements.txt                             # Notebook dependencies
 └── README.md                                    # This file
 ```
@@ -260,7 +260,7 @@ The project uses two primary datasets:
    - 1,176 utterances
    - 6 speakers, 7 emotions
 
-Both datasets are preprocessed and split into training and testing sets. Metadata files are available in `metadatos/`.
+Both datasets are preprocessed and split into training and testing sets. Metadata files are available in `metadata/`.
 
 **Note**: Audio data files are not included in the repository due to size limitations. Please obtain the datasets separately or use your own audio files for testing.
 
