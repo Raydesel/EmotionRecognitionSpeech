@@ -1,0 +1,22 @@
+# Core ML and Audio Processing
+tensorflow==2.15.0
+scikit-learn==1.6.1
+numpy==1.26.4
+scipy==1.11.4
+librosa==0.10.1
+
+# FastAPI and Web Framework
+fastapi==0.110.1
+uvicorn==0.29.0
+python-multipart==0.0.9
+
+# Data Processing
+pandas==2.1.4
+joblib==1.3.2
+
+# Audio Processing
+soundfile==0.12.1
+pydub==0.25.1
+
+# Utilities
+nest-asyncio==1.6.0

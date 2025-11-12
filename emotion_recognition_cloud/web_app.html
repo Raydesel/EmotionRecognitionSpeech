@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Recognition from Speech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .config-section label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .config-section input, .config-section select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .config-section input:focus, .config-section select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .model-selector {
+            margin-bottom: 20px;
+        }
+
+        .model-selector label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .model-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .model-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .model-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .model-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            animation: fadeIn 0.5s;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .emotion-label {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .confidence-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .probabilities {
+            margin-top: 20px;
+        }
+
+        .probabilities h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .probability-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .probability-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .probability-bar-container {
+            flex: 1;
+            margin: 0 15px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .probability-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+
+        .probability-value {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .error {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            border-radius: 8px;
+            color: #c62828;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .audio-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .audio-preview audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Emotion Recognition</h1>
+        <p class="subtitle">Upload an audio file to detect emotions in speech</p>
+
+        <div class="config-section">
+            <label for="apiUrl">API URL:</label>
+            <input type="text" id="apiUrl" value="http://localhost:8080" placeholder="http://localhost:8080">
+            <small style="color: #666; display: block; margin-top: 5px;">Change this if your API is running on a different address</small>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">🎤</div>
+            <div class="upload-text">Click to upload or drag and drop</div>
+            <div class="upload-hint">Supported formats: WAV, MP3, M4A, FLAC</div>
+            <input type="file" id="fileInput" accept=".wav,.mp3,.m4a,.flac,audio/*">
+        </div>
+
+        <div class="file-info" id="fileInfo">
+            <strong>Selected file:</strong> <span id="fileName"></span>
+            <div class="audio-preview" id="audioPreview"></div>
+        </div>
+
+        <div class="model-selector">
+            <label>Select Model:</label>
+            <div class="model-buttons">
+                <button class="model-btn active" data-model="MLP">MLP</button>
+                <button class="model-btn" data-model="SVM">SVM</button>
+                <button class="model-btn" data-model="KNN">KNN</button>
+            </div>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" disabled>Analyze Emotion</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing audio file...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <div class="result-header">
+                <div class="emotion-label" id="emotionLabel"></div>
+                <div class="confidence-badge" id="confidenceBadge"></div>
+            </div>
+            <div class="probabilities">
+                <h3>All Probabilities:</h3>
+                <div id="probabilitiesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const audioPreview = document.getElementById('audioPreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const error = document.getElementById('error');
+        const apiUrlInput = document.getElementById('apiUrl');
+        const modelButtons = document.querySelectorAll('.model-btn');
+        const emotionLabel = document.getElementById('emotionLabel');
+        const confidenceBadge = document.getElementById('confidenceBadge');
+        const probabilitiesList = document.getElementById('probabilitiesList');
+
+        let selectedFile = null;
+        let selectedModel = 'MLP';
+
+        // Model selection
+        modelButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modelButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedModel = btn.dataset.model;
+            });
+        });
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+
+            // Validate file type
+            const validTypes = ['.wav', '.mp3', '.m4a', '.flac'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validTypes.includes(fileExtension)) {
+                showError('Invalid file type. Please upload a WAV, MP3, M4A, or FLAC file.');
+                return;
+            }
+
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileInfo.classList.add('show');
+            submitBtn.disabled = false;
+            result.classList.remove('show');
+            error.classList.remove('show');
+
+            // Show audio preview
+            const audioUrl = URL.createObjectURL(file);
+            audioPreview.innerHTML = `
+                <strong>Audio Preview:</strong>
+                <audio controls src="${audioUrl}"></audio>
+            `;
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.classList.add('show');
+            loading.classList.remove('show');
+            submitBtn.disabled = false;
+        }
+
+        async function submitFile() {
+            if (!selectedFile) {
+                showError('Please select a file first.');
+                return;
+            }
+
+            const apiUrl = apiUrlInput.value.trim() || 'http://localhost:8080';
+            
+            // Show loading
+            loading.classList.add('show');
+            result.classList.remove('show');
+            error.classList.remove('show');
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const response = await fetch(`${apiUrl}/predict?model=${selectedModel}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display results
+                if (data.success) {
+                    emotionLabel.textContent = data.predicted_emotion;
+                    confidenceBadge.textContent = `${(data.confidence * 100).toFixed(1)}% confidence`;
+                    
+                    // Display probabilities
+                    probabilitiesList.innerHTML = '';
+                    const sortedProbs = Object.entries(data.all_probabilities || {})
+                        .sort((a, b) => b[1] - a[1]);
+
+                    sortedProbs.forEach(([emotion, prob]) => {
+                        const probItem = document.createElement('div');
+                        probItem.className = 'probability-item';
+                        probItem.innerHTML = `
+                            <span class="probability-label">${emotion}</span>
+                            <div class="probability-bar-container">
+                                <div class="probability-bar" style="width: ${prob * 100}%"></div>
+                            </div>
+                            <span class="probability-value">${(prob * 100).toFixed(1)}%</span>
+                        `;
+                        probabilitiesList.appendChild(probItem);
+                    });
+
+                    result.classList.add('show');
+                } else {
+                    showError(data.error || 'Prediction failed');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showError(`Failed to analyze audio: ${err.message}. Make sure the API is running at ${apiUrl}`);
+            } finally {
+                loading.classList.remove('show');
+                submitBtn.disabled = false;
+            }
+        }
+
+        submitBtn.addEventListener('click', submitFile);
+    </script>
+</body>
+</html>
+

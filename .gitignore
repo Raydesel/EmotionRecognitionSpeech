@@ -1,9 +1,122 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Model files (too large for GitHub - use Git LFS if needed)
+*.h5
+*.pkl
+*.pth
+*.pt
+*.ckpt
+*.pb
+saved_models/
+best_mlp_model.h5
+**/saved_models/
+
+# Data files (too large for GitHub)
+data/
+EMODB/
+EMOVO/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.wma
+
+# Feature cache
+feature_cache/
+*.pkl
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Documentation (keep only essential)
+*.pptx
+*.ppt
+# Research papers and thesis documents (reference only, not needed for code execution)
+articulos/
+documento/
 TesisAriel_imprimir.pdf
 
-#Ignore all txt files
+# Text files (except specific ones)
 *.txt
-*.docx
-*.ppt
+!README.md
+!CONTRIBUTING.md
+!LICENSE
+!requirements.txt
+!setup_environment.sh
 
-#except:
-!hola.txt
+# Word documents
+*.docx
+*.doc
+
+# Environment variables
+.env
+.env.local
+.env.*
+*.env
+
+# Docker
+.dockerignore
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
