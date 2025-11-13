@@ -38,6 +38,22 @@ docker build -t emotion-recognition-api .
 docker run -p 80:80 emotion-recognition-api
 ```
 
+### Web Interface
+
+The API includes a web-based user interface for easy interaction:
+
+- **Main Web App**: `http://localhost/` (or `http://localhost:80/`)
+- **Direct Access**: `http://localhost/static/web_app.html`
+
+The web interface allows you to:
+- Upload audio files via drag-and-drop or file picker
+- Select between MLP, SVM, and KNN models
+- View emotion predictions with confidence scores
+- See probability distributions for all emotion classes
+- Preview uploaded audio files
+
+**Note**: If running on a different port (e.g., `docker run -p 8080:80`), access the web app at `http://localhost:8080/` and update the API URL in the web interface if needed.
+
 ### API Usage Examples
 
 #### Single File Prediction
@@ -121,4 +137,15 @@ The application is built from the Complete Emotion Recognition Pipeline notebook
 - scikit-learn
 - FastAPI
 - Audio processing libraries (librosa, soundfile)
+
+## Scripts Folder
+
+The `scripts/` folder contains utility and testing scripts that are not part of the Docker application but are useful for development and maintenance:
+
+- **`fix_model_compatibility.py`** - Fixes TensorFlow model compatibility issues. Run this before building the Docker image if you encounter model loading errors.
+- **`test_api.py`** - Comprehensive test script for all API endpoints
+- **`test_predict_example.py`** - Example script demonstrating how to use the `/predict` endpoint
+- **`working_examples.py`** - Working examples showing various API usage patterns
+
+These scripts are not included in the Docker container and should be run from your local machine when testing or maintaining the API.
 

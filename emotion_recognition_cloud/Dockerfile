@@ -20,6 +20,10 @@ COPY ./app /code/app
 # Copy saved models (if they exist)
 COPY ./saved_models /code/saved_models
 
+# Create static directory and copy web app
+RUN mkdir -p /code/static
+COPY ./web_app.html /code/static/web_app.html
+
 # Create directory for temporary files
 RUN mkdir -p /tmp/audio_uploads
 

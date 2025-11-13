@@ -10,7 +10,8 @@ import uvicorn
 import numpy as np
 from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List
 import logging
@@ -37,6 +38,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files directory to serve web_app.html
+# Get the directory where this file is located
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+os.makedirs(STATIC_DIR, exist_ok=True)
+
+# Copy web_app.html to static directory if it exists in parent directory
+web_app_source = os.path.join(BASE_DIR, "web_app.html")
+web_app_dest = os.path.join(STATIC_DIR, "web_app.html")
+if os.path.exists(web_app_source) and not os.path.exists(web_app_dest):
+    import shutil
+    shutil.copy2(web_app_source, web_app_dest)
+
+# Mount static files
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 # Initialize the emotion recognition model
 try:
     emotion_model = EmotionRecognitionModel()
@@ -49,10 +67,14 @@ except Exception as e:
 
 @app.get("/")
 def home():
-    """Home endpoint with API information."""
+    """Home endpoint - serves web app or API information."""
+    web_app_path = os.path.join(BASE_DIR, "static", "web_app.html")
+    if os.path.exists(web_app_path):
+        return FileResponse(web_app_path)
     return {
         "message": "Emotion Recognition API is working!",
         "docs": "/docs",
+        "web_app": "/static/web_app.html",
         "available_models": emotion_model.get_available_models() if emotion_model else [],
         "emotion_classes": emotion_model.get_emotion_classes() if emotion_model else []
     }

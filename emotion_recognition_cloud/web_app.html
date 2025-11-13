@@ -345,8 +345,8 @@
 
         <div class="config-section">
             <label for="apiUrl">API URL:</label>
-            <input type="text" id="apiUrl" value="http://localhost:8080" placeholder="http://localhost:8080">
-            <small style="color: #666; display: block; margin-top: 5px;">Change this if your API is running on a different address</small>
+            <input type="text" id="apiUrl" value="" placeholder="Auto-detected from current page">
+            <small style="color: #666; display: block; margin-top: 5px;">Auto-detects from current page. Change if your API is running on a different address</small>
         </div>
 
         <div class="upload-area" id="uploadArea">
@@ -409,6 +409,13 @@
 
         let selectedFile = null;
         let selectedModel = 'MLP';
+
+        // Auto-populate API URL on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!apiUrlInput.value.trim()) {
+                apiUrlInput.value = window.location.origin;
+            }
+        });
 
         // Model selection
         modelButtons.forEach(btn => {
@@ -488,7 +495,12 @@
                 return;
             }
 
-            const apiUrl = apiUrlInput.value.trim() || 'http://localhost:8080';
+            // Auto-detect API URL from current page origin, or use user input
+            let apiUrl = apiUrlInput.value.trim();
+            if (!apiUrl) {
+                // Use the origin of the current page (works when served from same server)
+                apiUrl = window.location.origin;
+            }
             
             // Show loading
             loading.classList.add('show');

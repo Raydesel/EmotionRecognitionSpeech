@@ -17,7 +17,7 @@ if [ $? -eq 0 ]; then
     echo "   docker-compose up"
     echo ""
     echo "🧪 To test the API:"
-    echo "   python test_api.py"
+    echo "   python scripts/test_api.py"
 else
     echo "❌ Docker build failed!"
     exit 1
